@@ -20,6 +20,7 @@ export default defineConfig(() => {
           tool: path.resolve(__dirname, 'tool.html'),
           auth: path.resolve(__dirname, 'auth.html'),
           history: path.resolve(__dirname, 'history.html'),
+          githubCallback: path.resolve(__dirname, 'github-callback.html'),
         }
       }
     },
