@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Run Autopsy | CodeAutopsy</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  
+  <nav class="navbar">
+    <div class="nav-brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C8.686 2 6 4.418 6 7.4c0 1.942 1.114 3.652 2.766 4.67l-2.029 4.618a1 1 0 0 0 .916 1.403h8.694a1 1 0 0 0 .916-1.403l-2.029-4.618C16.886 11.052 18 9.342 18 7.4 18 4.418 15.314 2 12 2z"/>
+        <path d="M9 22h6" />
+      </svg>
+      CodeAutopsy
+    </div>
+    <div id="run-progress-container" style="display:none;flex:1;max-width:200px;margin:0 1.5rem;align-items:center;gap:0.5rem;">
+      <div style="flex:1;height:4px;background:var(--card-border);border-radius:2px;overflow:hidden;">
+        <div id="run-progress-bar" style="width:0%;height:100%;background:var(--accent-red);border-radius:2px;transition:width 0.3s ease;"></div>
+      </div>
+      <span id="run-progress-text" style="font-size:0.65rem;font-family:var(--font-mono);color:var(--text-muted);white-space:nowrap;">0%</span>
+    </div>
+    <style>
+      @media (max-width: 768px) {
+        #run-progress-container { display: none !important; }
+      }
+    </style>
+    <button class="menu-toggle">Menu</button>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/how-it-works.html">How It Works</a></li>
+      <li class="nav-features-item">
+        <a href="#" class="nav-features-trigger">Features <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-left:3px;transition:transform 0.25s ease;"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="mega-menu">
+          <a href="/tool.html?mode=autopsy" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.686 2 6 4.418 6 7.4c0 1.942 1.114 3.652 2.766 4.67l-2.029 4.618a1 1 0 0 0 .916 1.403h8.694a1 1 0 0 0 .916-1.403l-2.029-4.618C16.886 11.052 18 9.342 18 7.4 18 4.418 15.314 2 12 2z" stroke-linecap="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Autopsy</span>
+              <span class="mega-desc">Bug detection, security scan & quality score</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=explain" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Explainer</span>
+              <span class="mega-desc">Line by line breakdown & suggestions</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=smell" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Smell</span>
+              <span class="mega-desc">Detect bad patterns & anti-patterns</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=pr" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">PR Review</span>
+              <span class="mega-desc">Review GitHub pull requests instantly</span>
+            </div>
+          </a>
+        </div>
+      </li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/history.html">History</a></li>
+    </ul>
+  </nav>
+
+  <main class="container" style="padding-bottom: 2rem;">
+    <div class="tool-layout fade-in">
+      
+      <!-- Left Panel: Input -->
+      <div class="tool-panel">
+        <!-- Mode Indicator -->
+        <div id="mode-indicator" style="padding:0.5rem 1rem;background:rgba(255,49,49,0.06);border-bottom:1px solid var(--card-border);display:flex;align-items:center;gap:0.5rem;font-family:var(--font-mono);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-red);">
+          <svg id="mode-indicator-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0;"></svg>
+          <span id="mode-indicator-text">Code Autopsy</span>
+          <span style="margin-left:auto;font-size:0.62rem;color:var(--text-muted);font-weight:400;">via Features menu to switch</span>
+        </div>
+
+        <div class="panel-header">
+          <select id="language-select">
+            <option value="html">HTML</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+            <option value="go">Go</option>
+            <option value="rust">Rust</option>
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+          </select>
+          <div class="panel-actions">
+            <button class="btn" id="import-github-btn" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Import from GitHub</button>
+            <button class="btn" id="clear-btn" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Clear</button>
+          </div>
+        </div>
+
+        <!-- File Upload Drop Zone -->
+        <div id="drop-zone" class="drop-zone">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Drop a file or <label for="file-input" class="file-label">browse</label></span>
+          <span class="drop-zone-hint">Supports .js .ts .py .java .go .rs .c .cpp .html .css .php .rb .swift</span>
+          <input type="file" id="file-input" accept=".js,.ts,.jsx,.tsx,.py,.java,.go,.rs,.c,.cpp,.h,.hpp,.html,.css,.php,.rb,.swift,.kt,.cs,.txt" style="display:none">
+        </div>
+        <div class="code-area">
+          <div class="line-numbers" id="line-numbers"></div>
+          <textarea id="code-input" placeholder="Paste your code here...&#10;&#10;function processUser(req, res) {&#10;  const id = req.query.id;&#10;  db.query(`SELECT * FROM users WHERE id = ${id}`);&#10;}"></textarea>
+        </div>
+
+        <!-- PR Mode Input (shown only in PR mode) -->
+        <div id="pr-input-panel" style="display:none;flex:1;flex-direction:column;padding:1.5rem;gap:1.25rem;">
+          <div>
+            <label style="font-family:var(--font-mono);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);display:block;margin-bottom:0.5rem;">GitHub Pull Request URL</label>
+            <input id="pr-url-input" type="url" placeholder="https://github.com/owner/repo/pull/123"
+              style="width:100%;padding:0.75rem 1rem;background:var(--card-bg);border:1px solid var(--card-border);color:var(--text-main);border-radius:6px;font-family:var(--font-mono);font-size:0.85rem;outline:none;transition:border-color 0.2s;box-sizing:border-box;"
+              onfocus="this.style.borderColor='var(--accent-red)'" onblur="this.style.borderColor='var(--card-border)'"/>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.5rem;line-height:1.5;">Paste any public GitHub PR URL. Private repos require GitHub login.</p>
+          </div>
+          <div id="pr-login-notice" style="display:none;background:rgba(255,165,0,0.08);border:1px solid rgba(255,165,0,0.3);border-radius:6px;padding:0.85rem 1rem;font-size:0.8rem;color:#ffa500;display:flex;align-items:center;gap:0.6rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><path d="M12 9v3m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Private repo? <button onclick="document.getElementById('import-github-btn').click()" style="background:none;border:none;color:#ffa500;cursor:pointer;font-weight:700;text-decoration:underline;padding:0;font-size:0.8rem;">Connect GitHub</button> to access it.</span>
+          </div>
+          <div id="pr-examples-box" style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:6px;padding:1rem;">
+            <p style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);margin:0 0 0.5rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Example URLs</p>
+            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+              <span class="pr-example-url" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--accent-red);cursor:pointer;opacity:0.8;" onclick="document.getElementById('pr-url-input').value=this.innerText">https://github.com/facebook/react/pull/31680</span>
+              <span class="pr-example-url" style="font-family:var(--font-mono);font-size:0.75rem;color:var(--accent-red);cursor:pointer;opacity:0.8;" onclick="document.getElementById('pr-url-input').value=this.innerText">https://github.com/vercel/next.js/pull/75000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Run Button -->
+        <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--card-border); background: var(--card-bg); flex-shrink:0;">
+          <button class="btn btn-primary" id="run-btn" style="width:100%; padding: 0.75rem; font-size: 0.9rem;">Run Autopsy</button>
+        </div>
+      </div>
+
+      <!-- Right Panel: Output -->
+      <div class="tool-panel">
+        <div class="panel-header" style="flex-wrap:wrap;gap:0.4rem;">
+          <h3 id="output-title" style="font-size: 1rem; margin:0; padding: 0.25rem 0; flex-shrink:0;">Diagnostic Output</h3>
+          <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;margin-left:auto;">
+            <button id="share-btn" class="output-action-btn" title="Share result link" style="display:none;">Share</button>
+            <button id="export-btn" class="output-action-btn" title="Export report" style="display:none;">Export</button>
+            <button id="diff-toggle-btn" class="output-action-btn" title="Toggle diff view" style="display:none;">Diff View</button>
+            <a href="/history.html" style="background:none;border:1px solid var(--card-border);color:var(--text-muted);font-family:var(--font-mono);font-size:0.7rem;padding:0.3rem 0.7rem;cursor:pointer;border-radius:3px;text-decoration:none;">History</a>
+          </div>
+        </div>
+        <div class="output-content" id="output-content">
+          <div class="empty-state">
+            <div class="empty-state-illustration">
+              <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="50" stroke="rgba(255,49,49,0.15)" stroke-width="1" stroke-dasharray="4 4"/>
+                <circle cx="60" cy="60" r="35" stroke="rgba(255,49,49,0.1)" stroke-width="1"/>
+                <path d="M40 60 C40 48 48 40 60 40 C72 40 80 48 80 60" stroke="rgba(255,49,49,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="60" cy="60" r="4" fill="rgba(255,49,49,0.2)" stroke="rgba(255,49,49,0.4)" stroke-width="1"/>
+                <path d="M60 56 L60 44" stroke="rgba(255,49,49,0.3)" stroke-width="1" stroke-dasharray="2 2"/>
+                <path d="M45 75 L75 75" stroke="rgba(255,49,49,0.15)" stroke-width="1"/>
+                <path d="M50 80 L70 80" stroke="rgba(255,49,49,0.1)" stroke-width="1"/>
+              </svg>
+            </div>
+            <p style="font-family:var(--font-mono); font-size:0.85rem; margin-top: 0.5rem;">Awaiting diagnosis...</p>
+            <p style="font-size:0.75rem; margin-top:0.25rem;">Paste code and run an autopsy or explainer</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Quota Info Modal (shown when a feature page loads) -->
+  <div id="quota-modal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:2500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px);">
+    <div style="background:var(--panel-bg);border:1px solid var(--card-border);border-radius:8px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.5);padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+        <h3 style="margin:0;font-size:1rem;font-family:var(--font-mono);">Daily Quota</h3>
+        <button id="quota-modal-close" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.3rem;line-height:1;">&times;</button>
+      </div>
+      <div id="quota-modal-body" style="font-size:0.85rem;color:var(--text-main);line-height:1.6;"></div>
+    </div>
+  </div>
+
+  <!-- GitHub Import Modal (fixed overlay, outside layout) -->
+  <div id="github-modal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:2000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px);">
+    <div style="background:var(--panel-bg);border:1px solid var(--card-border);border-radius:8px;width:90%;max-width:600px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div style="padding:1.5rem;border-bottom:1px solid var(--card-border);display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="margin:0;font-size:1rem;">Import from GitHub</h3>
+        <button id="github-modal-close" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.3rem;">&times;</button>
+      </div>
+      <div id="github-modal-content" style="flex:1;overflow-y:auto;padding:1.5rem;">
+        <div id="github-auth-section" style="display:flex;flex-direction:column;gap:1rem;align-items:center;justify-content:center;padding:2rem;">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:48px;height:48px;opacity:0.6;"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <p style="text-align:center;color:var(--text-muted);margin:0;">Sign in with GitHub to import code directly from your repositories</p>
+          <button id="github-login-btn" style="background:var(--accent-red);color:white;border:none;padding:0.75rem 2rem;border-radius:4px;cursor:pointer;font-weight:500;font-family:var(--font-body);">Sign in with GitHub</button>
+        </div>
+        <div id="github-repos-section" style="display:none;">
+          <div style="margin-bottom:1rem;">
+            <input id="github-repo-search" type="text" placeholder="Search repositories..." style="width:100%;padding:0.6rem;background:var(--card-bg);border:1px solid var(--card-border);color:var(--text-main);border-radius:4px;font-family:var(--font-mono);font-size:0.85rem;">
+          </div>
+          <div id="github-repos-list" style="max-height:400px;overflow-y:auto;border:1px solid var(--card-border);border-radius:4px;"></div>
+        </div>
+        <div id="github-files-section" style="display:none;">
+          <div style="margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+            <button id="github-back-btn" style="background:none;border:none;color:var(--accent-red);cursor:pointer;padding:0.5rem;">← Back</button>
+            <span id="github-current-path" style="font-family:var(--font-mono);font-size:0.85rem;color:var(--text-muted);">root/</span>
+          </div>
+          <div id="github-files-list" style="max-height:400px;overflow-y:auto;border:1px solid var(--card-border);border-radius:4px;"></div>
+        </div>
+        <div id="github-loading" style="display:none;text-align:center;padding:2rem;">
+          <div style="width:32px;height:32px;border:3px solid var(--card-border);border-top-color:var(--accent-red);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></div>
+          <p style="margin-top:1rem;color:var(--text-muted);font-size:0.85rem;">Loading...</p>
+        </div>
+        <div id="github-error" style="display:none;background:rgba(255,49,49,0.1);border:1px solid var(--accent-red);padding:1rem;border-radius:4px;color:var(--accent-red);font-size:0.85rem;"></div>
+      </div>
+      <div style="padding:1rem;border-top:1px solid var(--card-border);display:flex;gap:0.5rem;justify-content:flex-end;">
+        <button id="github-modal-cancel" style="background:none;border:1px solid var(--card-border);color:var(--text-muted);padding:0.5rem 1rem;border-radius:4px;cursor:pointer;font-family:var(--font-body);font-size:0.85rem;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Drawer (fixed overlay, outside layout) -->
+  <div id="history-drawer" style="position:fixed;top:0;right:-280px;width:260px;height:100vh;background:var(--panel-bg);border-left:1px solid var(--card-border);z-index:1000;padding:0;overflow:hidden;transition:right 0.3s ease;box-shadow:-4px 0 20px rgba(0,0,0,0.4);display:flex;flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--card-border);flex-shrink:0;">
+      <h4 style="font-family:var(--font-mono);font-size:0.8rem;color:var(--accent-white);margin:0;" id="history-drawer-title">HISTORY</h4>
+      <button onclick="document.getElementById('history-drawer').style.right='-280px'" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;">&times;</button>
+    </div>
+    <div id="history-panel" style="flex:1;overflow-y:auto;padding:0.5rem 1rem;"></div>
+    <div style="padding:0.75rem 1rem;border-top:1px solid var(--card-border);flex-shrink:0;">
+      <button onclick="localStorage.removeItem('autopsy_history');document.getElementById('history-panel').innerHTML='<p style=\'color:var(--text-muted);font-size:0.72rem;\'>Cleared.</p>';" style="width:100%;padding:0.4rem;background:none;border:1px solid var(--card-border);color:var(--text-muted);font-family:var(--font-mono);font-size:0.7rem;cursor:pointer;">Clear History</button>
+    </div>
+  </div>
+
+  <footer class="footer fade-in" style="margin-top: 2rem;">
+    <div class="tagline">CodeAutopsy &mdash; Diagnose before you deploy.</div>
+  </footer>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

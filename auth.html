@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication | CodeAutopsy</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  
+  <div class="absolute inset-0 grid-bg pointer-events-none opacity-50"></div>
+  <div class="scanline"></div>
+  
+  <nav class="navbar relative z-20">
+    <div class="nav-brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C8.686 2 6 4.418 6 7.4c0 1.942 1.114 3.652 2.766 4.67l-2.029 4.618a1 1 0 0 0 .916 1.403h8.694a1 1 0 0 0 .916-1.403l-2.029-4.618C16.886 11.052 18 9.342 18 7.4 18 4.418 15.314 2 12 2z"/>
+        <path d="M9 22h6" />
+      </svg>
+      CODE<span style="color:var(--accent-red)">AUTOPSY</span>
+    </div>
+    <button class="menu-toggle">Menu</button>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/how-it-works.html">How It Works</a></li>
+      <li class="nav-features-item">
+        <a href="#" class="nav-features-trigger">Features <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-left:3px;transition:transform 0.25s ease;"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="mega-menu">
+          <a href="/tool.html?mode=autopsy" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.686 2 6 4.418 6 7.4c0 1.942 1.114 3.652 2.766 4.67l-2.029 4.618a1 1 0 0 0 .916 1.403h8.694a1 1 0 0 0 .916-1.403l-2.029-4.618C16.886 11.052 18 9.342 18 7.4 18 4.418 15.314 2 12 2z" stroke-linecap="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Autopsy</span>
+              <span class="mega-desc">Bug detection, security scan & quality score</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=explain" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Explainer</span>
+              <span class="mega-desc">Line by line breakdown & suggestions</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=smell" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Smell</span>
+              <span class="mega-desc">Detect bad patterns & anti-patterns</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=pr" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">PR Review</span>
+              <span class="mega-desc">Review GitHub pull requests instantly</span>
+            </div>
+          </a>
+        </div>
+      </li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/history.html">History</a></li>
+    </ul>
+  </nav>
+
+  <main class="container" style="display:flex; align-items:center; justify-content:center; min-height:calc(100vh - 150px); position: relative; z-index: 10;">
+    <div class="auth-box fade-in" style="background:var(--panel-bg); border:1px solid var(--card-border); padding:2.5rem; width:100%; max-width:400px; box-shadow:var(--accent-neon);">
+      
+      <!-- Tabs -->
+      <div style="display:flex; border-bottom:1px solid var(--card-border); margin-bottom:2rem;">
+        <button id="tab-login" class="tab-btn active" style="flex:1; background:none; border:none; color:var(--accent-white); padding:1rem; font-family:var(--font-mono); cursor:pointer; font-weight:bold; border-bottom:2px solid var(--accent-red);">Sign In</button>
+        <button id="tab-signup" class="tab-btn" style="flex:1; background:none; border:none; color:var(--text-muted); padding:1rem; font-family:var(--font-mono); cursor:pointer; font-weight:bold; border-bottom:2px solid transparent;">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div style="margin-bottom:1.5rem;">
+          <label style="display:block; margin-bottom:0.5rem; font-size:0.8rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted);">Email</label>
+          <input type="email" id="login-email" required style="width:100%; padding:0.75rem; background:var(--card-bg); border:1px solid var(--card-border); color:var(--accent-white); font-family:var(--font-mono); outline:none;">
+        </div>
+        <div style="margin-bottom:2rem;">
+          <label style="display:block; margin-bottom:0.5rem; font-size:0.8rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted);">Password</label>
+          <div style="position:relative;">
+            <input type="password" id="login-password" required style="width:100%; padding:0.75rem 2.75rem 0.75rem 0.75rem; background:var(--card-bg); border:1px solid var(--card-border); color:var(--accent-white); font-family:var(--font-mono); outline:none; box-sizing:border-box;">
+            <button type="button" onclick="const li=document.getElementById('login-password');const lShow=li.type==='password';li.type=lShow?'text':'password';this.querySelector('svg').style.opacity=lShow?'1':'0.4';" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;display:flex;align-items:center;" title="Toggle password visibility">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <p id="login-error" style="color:var(--accent-red); font-size:0.8rem; margin-bottom:1rem; display:none;"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Authenticate</button>
+        
+        <!-- GitHub OAuth Divider -->
+        <div style="display:flex; align-items:center; margin:1.5rem 0; gap:1rem;">
+          <div style="flex:1; height:1px; background:var(--card-border);"></div>
+          <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Or</span>
+          <div style="flex:1; height:1px; background:var(--card-border);"></div>
+        </div>
+        <button type="button" class="btn btn-secondary github-login-btn-auth" style="width:100%; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px; height:16px;">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          Continue with GitHub
+        </button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" style="display:none;">
+        <div style="margin-bottom:1.5rem;">
+          <label style="display:block; margin-bottom:0.5rem; font-size:0.8rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted);">Display Name</label>
+          <input type="text" id="signup-name" required style="width:100%; padding:0.75rem; background:var(--card-bg); border:1px solid var(--card-border); color:var(--accent-white); font-family:var(--font-mono); outline:none;">
+        </div>
+        <div style="margin-bottom:1.5rem;">
+          <label style="display:block; margin-bottom:0.5rem; font-size:0.8rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted);">Email</label>
+          <input type="email" id="signup-email" required style="width:100%; padding:0.75rem; background:var(--card-bg); border:1px solid var(--card-border); color:var(--accent-white); font-family:var(--font-mono); outline:none;">
+        </div>
+        <div style="margin-bottom:2rem;">
+          <label style="display:block; margin-bottom:0.5rem; font-size:0.8rem; font-family:var(--font-mono); text-transform:uppercase; color:var(--text-muted);">Password</label>
+          <div style="position:relative;">
+            <input type="password" id="signup-password" minlength="6" required style="width:100%; padding:0.75rem 2.75rem 0.75rem 0.75rem; background:var(--card-bg); border:1px solid var(--card-border); color:var(--accent-white); font-family:var(--font-mono); outline:none; box-sizing:border-box;">
+            <button type="button" onclick="const si=document.getElementById('signup-password');const sShow=si.type==='password';si.type=sShow?'text':'password';this.querySelector('svg').style.opacity=sShow?'1':'0.4';" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;display:flex;align-items:center;" title="Toggle password visibility">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <p id="signup-error" style="color:var(--accent-red); font-size:0.8rem; margin-bottom:1rem; display:none;"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Initialize Account</button>
+        
+        <!-- GitHub OAuth Divider -->
+        <div style="display:flex; align-items:center; margin:1.5rem 0; gap:1rem;">
+          <div style="flex:1; height:1px; background:var(--card-border);"></div>
+          <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Or</span>
+          <div style="flex:1; height:1px; background:var(--card-border);"></div>
+        </div>
+        <button type="button" class="btn btn-secondary github-login-btn-auth" style="width:100%; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px; height:16px;">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          Continue with GitHub
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer fade-in" style="margin-top: 0;">
+    <div class="tagline">CodeAutopsy &mdash; Diagnose before you deploy.</div>
+  </footer>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

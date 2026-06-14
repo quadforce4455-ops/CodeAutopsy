@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Auth - CodeAutopsy</title>
+  <style>
+    body {
+      background: #0a0a0f;
+      color: #d1d5db;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 49, 49, 0.2);
+      border-top-color: #ff3131;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    p {
+      margin: 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="spinner"></div>
+    <p>Authenticating with GitHub...</p>
+    <p style="font-size: 0.9rem; color: #9ca3af;">Please wait</p>
+  </div>
+
+  <script>
+    (async () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const error = params.get('error');
+
+        if (error) {
+          document.body.innerHTML = `<div class="container"><p style="color: #ff3131;">Authentication failed: ${error}</p><p style="font-size:0.9rem;margin-top:1rem;"><a href="/tool.html" style="color:#ff3131;text-decoration:none;">Back to CodeAutopsy</a></p></div>`;
+          return;
+        }
+
+        if (!code) {
+          throw new Error('No authorization code received');
+        }
+
+        // Exchange code for token
+        const response = await fetch('/api/github/callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        if (data.sessionId) {
+          // Store session ID in localStorage
+          localStorage.setItem('github_session_id', data.sessionId);
+          
+          // Store user info
+          localStorage.setItem('github_user', JSON.stringify(data.user));
+
+          // Close popup and notify parent window
+          if (window.opener) {
+            // Popup mode - close and let parent handle redirect
+            window.close();
+          } else {
+            // Direct load - redirect to tool
+            window.location.href = '/tool.html';
+          }
+        }
+      } catch (error) {
+        console.error('Auth callback error:', error);
+        document.body.innerHTML = `<div class="container"><p style="color: #ff3131;">Authentication error: ${error.message}</p><p style="font-size:0.9rem;margin-top:1rem;"><a href="/tool.html" style="color:#ff3131;text-decoration:none;">Back to CodeAutopsy</a></p></div>`;
+      }
+    })();
+  </script>
+</body>
+</html>

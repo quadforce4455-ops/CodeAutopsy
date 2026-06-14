@@ -1,0 +1,12 @@
+{
+  "name": "CodeAutopsy",
+  "description": "Your code has bugs. We just haven't told you yet.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"],
+  "secrets": [
+    {
+      "name": "GEMINI_API_KEY",
+      "description": "Gemini API Key for code analysis"
+    }
+  ]
+}

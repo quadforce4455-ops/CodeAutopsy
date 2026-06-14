@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review History | CodeAutopsy</title>
+  <meta name="description" content="Browse your past CodeAutopsy code reviews — filter, sort, and analyze your review history with score trends and detailed stats.">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  
+  <nav class="navbar">
+    <div class="nav-brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C8.686 2 6 4.418 6 7.4c0 1.942 1.114 3.652 2.766 4.67l-2.029 4.618a1 1 0 0 0 .916 1.403h8.694a1 1 0 0 0 .916-1.403l-2.029-4.618C16.886 11.052 18 9.342 18 7.4 18 4.418 15.314 2 12 2z"/>
+        <path d="M9 22h6" />
+      </svg>
+      CodeAutopsy
+    </div>
+    <button class="menu-toggle">Menu</button>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/how-it-works.html">How It Works</a></li>
+      <li class="nav-features-item">
+        <a href="#" class="nav-features-trigger">Features <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-left:3px;transition:transform 0.25s ease;"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="mega-menu">
+          <a href="/tool.html?mode=autopsy" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.686 2 6 4.418 6 7.4c0 1.942 1.114 3.652 2.766 4.67l-2.029 4.618a1 1 0 0 0 .916 1.403h8.694a1 1 0 0 0 .916-1.403l-2.029-4.618C16.886 11.052 18 9.342 18 7.4 18 4.418 15.314 2 12 2z" stroke-linecap="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Autopsy</span>
+              <span class="mega-desc">Bug detection, security scan & quality score</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=explain" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Explainer</span>
+              <span class="mega-desc">Line by line breakdown & suggestions</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=smell" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Smell</span>
+              <span class="mega-desc">Detect bad patterns & anti-patterns</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=pr" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">PR Review</span>
+              <span class="mega-desc">Review GitHub pull requests instantly</span>
+            </div>
+          </a>
+        </div>
+      </li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/history.html">History</a></li>
+    </ul>
+  </nav>
+
+  <main class="container" style="padding-bottom: 4rem;">
+
+    <!-- Page Header -->
+    <div class="history-header fade-in">
+      <div>
+        <h1 id="history-page-title">Review History</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem;">Track your autopsy results over time</p>
+      </div>
+      <button class="btn btn-secondary" id="clear-all-btn" style="padding:0.5rem 1.2rem;font-size:0.75rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:0.3rem;">
+          <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Clear All
+      </button>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="history-stats fade-in" id="history-stats">
+      <div class="history-stat-card">
+        <div class="history-stat-value" id="stat-total">0</div>
+        <div class="history-stat-label">Total Reviews</div>
+      </div>
+      <div class="history-stat-card">
+        <div class="history-stat-value" id="stat-avg-score">—</div>
+        <div class="history-stat-label">Avg Score</div>
+      </div>
+      <div class="history-stat-card">
+        <div class="history-stat-value" id="stat-top-lang">—</div>
+        <div class="history-stat-label">Top Language</div>
+      </div>
+      <div class="history-stat-card">
+        <div class="history-stat-value" id="stat-total-bugs">0</div>
+        <div class="history-stat-label">Total Bugs</div>
+      </div>
+    </div>
+
+    <!-- Score Trend Chart -->
+    <div class="history-chart-wrap fade-in" id="chart-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-size:0.85rem;margin:0;">Score Trend</h3>
+        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;">Over time →</span>
+      </div>
+      <div class="history-chart-container">
+        <canvas id="score-chart" width="800" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Filter / Sort Bar -->
+    <div class="history-filter-bar fade-in" id="filter-bar">
+      <div class="filter-group">
+        <label class="filter-label">Language</label>
+        <select id="filter-language" class="filter-select">
+          <option value="all">All Languages</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Mode</label>
+        <select id="filter-mode" class="filter-select">
+          <option value="all">All Modes</option>
+          <option value="autopsy">Autopsy</option>
+          <option value="explain">Explainer</option>
+          <option value="smell">Code Smell</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Score</label>
+        <select id="filter-score" class="filter-select">
+          <option value="all">Any Score</option>
+          <option value="7-10">7–10 (Good)</option>
+          <option value="4-6">4–6 (Average)</option>
+          <option value="0-3">0–3 (Poor)</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Sort</label>
+        <select id="sort-order" class="filter-select">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="highest">Highest Score</option>
+          <option value="lowest">Lowest Score</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Review Cards Grid -->
+    <div class="history-cards-grid" id="history-cards">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Empty State -->
+    <div class="history-empty" id="history-empty" style="display:none;">
+      <div class="empty-state-illustration">
+        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="50" stroke="rgba(255,49,49,0.15)" stroke-width="1" stroke-dasharray="4 4"/>
+          <circle cx="60" cy="60" r="35" stroke="rgba(255,49,49,0.1)" stroke-width="1"/>
+          <path d="M40 60 C40 48 48 40 60 40 C72 40 80 48 80 60" stroke="rgba(255,49,49,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="60" cy="60" r="4" fill="rgba(255,49,49,0.2)" stroke="rgba(255,49,49,0.4)" stroke-width="1"/>
+          <path d="M45 75 L75 75" stroke="rgba(255,49,49,0.15)" stroke-width="1"/>
+          <path d="M50 80 L70 80" stroke="rgba(255,49,49,0.1)" stroke-width="1"/>
+        </svg>
+      </div>
+      <p style="font-family:var(--font-mono);font-size:0.85rem;margin-top:0.5rem;color:var(--text-muted);">No reviews yet</p>
+      <p style="font-size:0.75rem;margin-top:0.25rem;color:var(--text-muted);">Run your first autopsy to see history here</p>
+      <a href="/tool.html" class="btn btn-primary" style="margin-top:1.5rem;padding:0.6rem 1.5rem;font-size:0.8rem;">Run Autopsy</a>
+    </div>
+
+    <!-- No Results State -->
+    <div class="history-empty" id="no-results" style="display:none;">
+      <p style="font-family:var(--font-mono);font-size:0.85rem;color:var(--text-muted);">No reviews match your filters</p>
+      <button class="btn btn-secondary" id="reset-filters-btn" style="margin-top:1rem;padding:0.5rem 1.2rem;font-size:0.75rem;">Reset Filters</button>
+    </div>
+
+  </main>
+
+  <!-- Clear Confirmation Modal -->
+  <div id="clear-modal" class="history-modal-overlay" style="display:none;">
+    <div class="history-modal">
+      <div class="history-modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="1.5" style="width:48px;height:48px;">
+          <path d="M12 9v3m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3 style="margin:0 0 0.5rem;">Clear All History?</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1.5rem;">This will permanently delete all your review history. This action cannot be undone.</p>
+      <div style="display:flex;gap:0.75rem;justify-content:center;">
+        <button class="btn btn-secondary" id="clear-cancel" style="padding:0.5rem 1.5rem;font-size:0.8rem;">Cancel</button>
+        <button class="btn btn-primary" id="clear-confirm" style="padding:0.5rem 1.5rem;font-size:0.8rem;background:#dc2626;border-color:#dc2626;">Delete All</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer fade-in" style="margin-top: 2rem;">
+    <div class="tagline">CodeAutopsy &mdash; Diagnose before you deploy.</div>
+    <div>&copy; 2026 CodeAutopsy. All rights reserved.</div>
+  </footer>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

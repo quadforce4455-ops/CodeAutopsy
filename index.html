@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeAutopsy | Your code has bugs.</title>
+  <link rel="stylesheet" href="/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;500;600;700&family=Sora:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    /* ── Marquee ────────────────────────────────────────────────────── */
+    .marquee-section {
+      overflow: hidden;
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.85rem 0;
+      background: var(--panel-bg, #0d0d12);
+      position: relative;
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 28s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 2rem;
+    font-family: 'Orbitron', var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+  white-space: nowrap;
+}
+    .marquee-item span.dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      flex-shrink: 0;
+    }
+    .marquee-item.highlight { color: var(--accent-red); }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── Card hover lift ────────────────────────────────────────────── */
+    .card {
+      transition: transform 0.3s cubic-bezier(0.25,1,0.5,1),
+                  box-shadow 0.3s cubic-bezier(0.25,1,0.5,1),
+                  border-color 0.3s ease !important;
+      cursor: default;
+    }
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(255,49,49,0.15), 0 0 0 1px rgba(255,49,49,0.2);
+      border-color: rgba(255,49,49,0.35) !important;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      transition: transform 0.3s cubic-bezier(0.25,1,0.5,1),
+                  box-shadow 0.3s cubic-bezier(0.25,1,0.5,1),
+                  border-color 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(255,49,49,0.15), 0 0 0 1px rgba(255,49,49,0.2);
+      border-color: rgba(255,49,49,0.35);
+    }
+    .feature-card .card-icon {
+      width: 36px; height: 36px;
+      stroke: var(--accent-red);
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent-white);
+    }
+    .feature-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ── Features grid ──────────────────────────────────────────────── */
+    .features-deep {
+      padding: 5rem 0;
+    }
+    .features-deep h2 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .features-deep .section-sub {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 3rem;
+    }
+    .features-deep-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* ── Mode showcase ──────────────────────────────────────────────── */
+    .mode-showcase {
+      padding: 5rem 0;
+      background: var(--panel-bg, #0d0d12);
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .mode-showcase h2 { text-align: center; margin-bottom: 0.5rem; }
+    .mode-showcase .section-sub { text-align:center;color:var(--text-muted);font-size:0.9rem;margin-bottom:3rem; }
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 768px) { .mode-grid { grid-template-columns: 1fr; } }
+    .mode-card {
+      border-radius: 10px;
+      padding: 1.75rem;
+      border: 1px solid;
+      transition: transform 0.3s cubic-bezier(0.25,1,0.5,1), box-shadow 0.3s ease;
+    }
+    .mode-card:hover { transform: translateY(-6px); }
+    .mode-card.autopsy {
+      background: rgba(255,49,49,0.04);
+      border-color: rgba(255,49,49,0.25);
+    }
+    .mode-card.autopsy:hover { box-shadow: 0 16px 40px rgba(255,49,49,0.12); }
+    .mode-card.explainer {
+      background: rgba(0,170,255,0.04);
+      border-color: rgba(0,170,255,0.25);
+    }
+    .mode-card.explainer:hover { box-shadow: 0 16px 40px rgba(0,170,255,0.12); }
+    .mode-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+    .mode-card.autopsy .mode-label { color: var(--accent-red); }
+    .mode-card.explainer .mode-label { color: #00aaff; }
+    .mode-card h3 { font-size: 1.1rem; margin-bottom: 0.75rem; }
+    .mode-output {
+      background: rgba(0,0,0,0.3);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.8;
+    }
+    .out-line { display: flex; align-items: flex-start; gap: 0.5rem; }
+    .out-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+    .badge-crit { background: rgba(255,49,49,0.2); color: #ff3131; }
+    .badge-warn { background: rgba(250,204,21,0.2); color: #facc15; }
+    .badge-sugg { background: rgba(0,170,255,0.2); color: #00aaff; }
+    .badge-line { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+    .badge-tip  { background: rgba(74,222,128,0.15); color: #4ade80; }
+    .out-text { color: var(--text-muted); }
+
+    /* ── Languages strip ────────────────────────────────────────────── */
+    .languages-section {
+      padding: 4rem 0;
+    }
+    .languages-section h2 { text-align:center; margin-bottom:0.5rem; }
+    .languages-section .section-sub { text-align:center;color:var(--text-muted);font-size:0.9rem;margin-bottom:2.5rem; }
+    .lang-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .lang-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 1.2rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 40px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.25s ease;
+      cursor: default;
+    }
+    .lang-pill:hover {
+      border-color: var(--accent-red);
+      color: var(--accent-white);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255,49,49,0.12);
+    }
+    .lang-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Mini how it works ──────────────────────────────────────────── */
+    .mini-how {
+      padding: 5rem 0;
+      background: var(--panel-bg, #0d0d12);
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .mini-how h2 { text-align:center; margin-bottom:0.5rem; }
+    .mini-how .section-sub { text-align:center;color:var(--text-muted);font-size:0.9rem;margin-bottom:3rem; }
+    .mini-steps {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 1.5rem;
+      position: relative;
+    }
+    @media (max-width: 768px) { .mini-steps { grid-template-columns: 1fr; } }
+    .mini-steps::before {
+      content: '';
+      position: absolute;
+      top: 2rem;
+      left: calc(16.66% + 1rem);
+      width: calc(66.66% - 2rem);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+      opacity: 0.3;
+    }
+    .mini-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .mini-step:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(255,49,49,0.1);
+      border-color: rgba(255,49,49,0.3);
+    }
+    .mini-step-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(255,49,49,0.1);
+      border: 1px solid rgba(255,49,49,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-red);
+      margin-bottom: 1rem;
+    }
+    .mini-step h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .mini-step p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; margin: 0; }
+
+    /* ── Stats upgrade ──────────────────────────────────────────────── */
+    .stats { padding: 5rem 0; }
+    .stats-grid { gap: 2rem; }
+    .stat-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .stat-item:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 32px rgba(255,49,49,0.1);
+      border-color: rgba(255,49,49,0.3);
+    }
+    .stat-item h3 {
+      font-size: 2.5rem;
+      font-family: var(--font-mono);
+      color: var(--accent-red);
+      margin-bottom: 0.5rem;
+    }
+    .stat-item p { color: var(--text-muted); font-size: 0.85rem; margin: 0; }
+
+    /* ── CTA section ────────────────────────────────────────────────── */
+    .cta-section {
+      padding: 6rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-top: 1px solid var(--card-border);
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(255,49,49,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-section h2 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      margin-bottom: 1rem;
+    }
+    .cta-section p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Section label ──────────────────────────────────────────────── */
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-red);
+      text-align: center;
+      margin-bottom: 0.75rem;
+    }
+    /* ── Info text font overrides (excludes glitch heading) ─────────── */
+    .hero p,
+    .section-sub,
+    .feature-card p,
+    .mode-card p,
+    .mini-step p,
+    .stat-item p,
+    .cta-section p,
+    .out-text,
+    .step-tag,
+    .lang-pill {
+      font-family: 'Sora', sans-serif !important;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+    }
+    .feature-card h3,
+    .mode-card h3,
+    .mini-step h3,
+    .features-deep h2,
+    .mode-showcase h2,
+    .languages-section h2,
+    .mini-how h2,
+    .cta-section h2,
+    .section-label,
+    .mode-label {
+      font-family: 'Rajdhani', sans-serif !important;
+      letter-spacing: 0.02em;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  
+  <nav class="navbar">
+    <div class="nav-brand">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C8.686 2 6 4.418 6 7.4c0 1.942 1.114 3.652 2.766 4.67l-2.029 4.618a1 1 0 0 0 .916 1.403h8.694a1 1 0 0 0 .916-1.403l-2.029-4.618C16.886 11.052 18 9.342 18 7.4 18 4.418 15.314 2 12 2z"/>
+        <path d="M9 22h6" />
+      </svg>
+      CodeAutopsy
+    </div>
+    <button class="menu-toggle">Menu</button>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/how-it-works.html">How It Works</a></li>
+      <li class="nav-features-item">
+        <a href="#" class="nav-features-trigger">Features <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-left:3px;transition:transform 0.25s ease;"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="mega-menu">
+          <a href="/tool.html?mode=autopsy" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.686 2 6 4.418 6 7.4c0 1.942 1.114 3.652 2.766 4.67l-2.029 4.618a1 1 0 0 0 .916 1.403h8.694a1 1 0 0 0 .916-1.403l-2.029-4.618C16.886 11.052 18 9.342 18 7.4 18 4.418 15.314 2 12 2z" stroke-linecap="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Autopsy</span>
+              <span class="mega-desc">Bug detection, security scan & quality score</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=explain" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Explainer</span>
+              <span class="mega-desc">Line by line breakdown & suggestions</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=smell" class="mega-item">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">Code Smell</span>
+              <span class="mega-desc">Detect bad patterns & anti-patterns</span>
+            </div>
+          </a>
+          <div class="mega-divider"></div>
+          <a href="/tool.html?mode=pr" class="mega-item mega-item-coming">
+            <div class="mega-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="mega-text">
+              <span class="mega-title">PR Review</span>
+              <span class="mega-desc">Review GitHub pull requests instantly</span>
+            </div>
+          </a>
+        </div>
+      </li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/history.html">History</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- ── Hero ─────────────────────────────────────────────────────── -->
+    <section class="hero container fade-in">
+      <div class="glitch-wrapper">
+        <h1 class="glitch">CodeAutopsy</h1>
+      </div>
+      <p>Your code has bugs. We just haven't told you yet. Deep static analysis and intelligent execution tracing powered by &nbsp;Gemini AI.</p>
+      <div class="hero-btns">
+        <a href="/tool.html" class="btn btn-primary">Run Autopsy</a>
+        <a href="/how-it-works.html" class="btn btn-secondary">See How It Works</a>
+      </div>
+    </section>
+
+    <!-- ── Marquee ───────────────────────────────────────────────────── -->
+    <div class="marquee-section">
+      <div class="marquee-track">
+        <!-- Set 1 -->
+        <div class="marquee-item highlight"><span class="dot"></span>BUG DETECTED</div>
+        <div class="marquee-item"><span class="dot"></span>SECURITY SCAN</div>
+        <div class="marquee-item highlight"><span class="dot"></span>CODE AUTOPSY</div>
+        <div class="marquee-item"><span class="dot"></span>QUALITY SCORE</div>
+        <div class="marquee-item highlight"><span class="dot"></span>COMPLEXITY ANALYSIS</div>
+        <div class="marquee-item"><span class="dot"></span>GITHUB IMPORT</div>
+        <div class="marquee-item highlight"><span class="dot"></span>FIX SUGGESTIONS</div>
+        <div class="marquee-item"><span class="dot"></span>CODE EXPLAINER</div>
+        <div class="marquee-item highlight"><span class="dot"></span>DIFF VIEW</div>
+        <div class="marquee-item"><span class="dot"></span>LINE BY LINE</div>
+        <div class="marquee-item highlight"><span class="dot"></span>EXPORT REPORT</div>
+        <div class="marquee-item"><span class="dot"></span>REVIEW HISTORY</div>
+        <!-- Set 2 (duplicate for seamless loop) -->
+        <div class="marquee-item highlight"><span class="dot"></span>BUG DETECTED</div>
+        <div class="marquee-item"><span class="dot"></span>SECURITY SCAN</div>
+        <div class="marquee-item highlight"><span class="dot"></span>CODE AUTOPSY</div>
+        <div class="marquee-item"><span class="dot"></span>QUALITY SCORE</div>
+        <div class="marquee-item highlight"><span class="dot"></span>COMPLEXITY ANALYSIS</div>
+        <div class="marquee-item"><span class="dot"></span>GITHUB IMPORT</div>
+        <div class="marquee-item highlight"><span class="dot"></span>FIX SUGGESTIONS</div>
+        <div class="marquee-item"><span class="dot"></span>CODE EXPLAINER</div>
+        <div class="marquee-item highlight"><span class="dot"></span>DIFF VIEW</div>
+        <div class="marquee-item"><span class="dot"></span>LINE BY LINE</div>
+        <div class="marquee-item highlight"><span class="dot"></span>EXPORT REPORT</div>
+        <div class="marquee-item"><span class="dot"></span>REVIEW HISTORY</div>
+      </div>
+    </div>
+
+    <!-- ── Features deep dive ────────────────────────────────────────── -->
+    <section class="features-deep container fade-in">
+      <p class="section-label">What We Detect</p>
+      <h2>Everything CodeAutopsy Does</h2>
+      <p class="section-sub">Six powerful analysis tools in one dark, fast, brutally honest tool.</p>
+      <div class="features-deep-grid">
+
+        <div class="feature-card fade-in">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 9v3m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Bug Detection</h3>
+          <p>Trace logic paths you didn't even know existed. Critical, warning and suggestion level issues with exact line numbers.</p>
+        </div>
+
+        <div class="feature-card fade-in" style="transition-delay:0.07s">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Security Scan</h3>
+          <p>SQL injections, XSS vulnerabilities, unsafe inputs, exposed secrets — caught before they reach production.</p>
+        </div>
+
+        <div class="feature-card fade-in" style="transition-delay:0.14s">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
+            <path d="M12 6v6l4 4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Complexity Analysis</h3>
+          <p>Time and space complexity calculated and explained. Know if your O(n²) loop is going to kill you in production.</p>
+        </div>
+
+        <div class="feature-card fade-in" style="transition-delay:0.21s">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Quality Score</h3>
+          <p>An honest 0–10 score covering maintainability, readability, performance and security. No sugarcoating.</p>
+        </div>
+
+        <div class="feature-card fade-in" style="transition-delay:0.28s">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Fix Suggestions</h3>
+          <p>Don't just find the bug — fix it. Get optimized, drop-in replacement code with a one-click copy button.</p>
+        </div>
+
+        <div class="feature-card fade-in" style="transition-delay:0.35s">
+          <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Code Explainer</h3>
+          <p>Switch to Explainer mode for a line-by-line breakdown of exactly what your code does, plus improvement tips.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Mode showcase ─────────────────────────────────────────────── -->
+    <section class="mode-showcase">
+      <div class="container">
+        <p class="section-label">Two Modes</p>
+        <h2>Pick Your Analysis</h2>
+        <p class="section-sub">Code Autopsy finds what's wrong. Code Explainer tells you what it does.</p>
+        <div class="mode-grid">
+
+          <div class="mode-card autopsy fade-in">
+            <div class="mode-label">⚕ Code Autopsy</div>
+            <h3>Find Bugs. Fix Code.</h3>
+            <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">Deep static analysis that finds bugs, security holes, and complexity issues — then gives you the fixed version.</p>
+            <div class="mode-output">
+              <div class="out-line"><span class="out-badge badge-crit">CRITICAL</span><span class="out-text">Line 9 — SQL injection via unsanitized input</span></div>
+              <div class="out-line" style="margin-top:0.5rem;"><span class="out-badge badge-warn">WARNING</span><span class="out-text">Line 23 — Memory not freed after malloc</span></div>
+              <div class="out-line" style="margin-top:0.5rem;"><span class="out-badge badge-sugg">SUGGEST</span><span class="out-text">Line 41 — Use const instead of let here</span></div>
+              <div class="out-line" style="margin-top:0.75rem;border-top:1px solid rgba(255,255,255,0.05);padding-top:0.75rem;">
+                <span class="out-badge badge-crit">SCORE</span><span class="out-text">4.2 / 10 — Needs immediate attention</span>
+              </div>
+              <div class="out-line" style="margin-top:0.5rem;"><span class="out-badge badge-warn">TIME</span><span class="out-text">O(n²) — Quadratic, consider optimization</span></div>
+            </div>
+          </div>
+
+          <div class="mode-card explainer fade-in" style="transition-delay:0.1s">
+            <div class="mode-label">📄 Code Explainer</div>
+            <h3>Understand Every Line.</h3>
+            <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">Get a plain-English, line-by-line breakdown of what your code actually does — perfect for learning or code review.</p>
+            <div class="mode-output">
+              <div class="out-line"><span class="out-badge badge-line">L 1–3</span><span class="out-text">Imports stdio and declares main function entry point</span></div>
+              <div class="out-line" style="margin-top:0.5rem;"><span class="out-badge badge-line">L 5</span><span class="out-text">Initializes integer variable i for loop counter</span></div>
+              <div class="out-line" style="margin-top:0.5rem;"><span class="out-badge badge-line">L 7–12</span><span class="out-text">Iterates from 5 to 49, skipping even numbers via modulo check</span></div>
+              <div class="out-line" style="margin-top:0.75rem;border-top:1px solid rgba(255,255,255,0.05);padding-top:0.75rem;">
+                <span class="out-badge badge-tip">TIP</span><span class="out-text">Consider using a helper function for the prime check</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Languages ─────────────────────────────────────────────────── -->
+    <section class="languages-section container fade-in">
+      <p class="section-label">Supported Languages</p>
+      <h2>9 Languages. One Tool.</h2>
+      <p class="section-sub">Auto-detected on paste. No manual selection needed in most cases.</p>
+      <div class="lang-grid">
+        <div class="lang-pill"><span class="lang-dot" style="background:#A8B9CC;"></span>HTML</div>
+        <div class="lang-pill"><span class="lang-dot" style="background:#1c6ae8;"></span>C</div>
+        <div class="lang-pill"><span class="lang-dot" style="background:#00599C;"></span>C++</div>
+        <div class="lang-pill"><span class="lang-dot" style="background:#3776AB;"></span>Python</div>
+        <div class="lang-pill"><span class="lang-dot" style="background:#F7DF1E;"></span>JavaScript</div>
+        <div class="lang-pill"><span class="lang-dot" style="background:#3178C6;"></span>TypeScript</div>
+        <div class="lang-pill"><span class="lang-dot" style="background:#B07219;"></span>Java</div>
+        <div class="lang-pill"><span class="lang-dot" style="background:#00ADD8;"></span>Go</div>
+        <div class="lang-pill"><span class="lang-dot" style="background:#CE422B;"></span>Rust</div>
+      </div>
+    </section>
+
+    <!-- ── Mini How It Works ──────────────────────────────────────────── -->
+    <section class="mini-how">
+      <div class="container">
+        <p class="section-label">The Process</p>
+        <h2>Three Steps. Zero Excuses.</h2>
+        <p class="section-sub">From paste to diagnosis in under 10 seconds.</p>
+        <div class="mini-steps">
+          <div class="mini-step fade-in">
+            <div class="mini-step-num">01</div>
+            <h3>Paste or Import</h3>
+            <p>Drop your code in, upload a file, or import directly from a GitHub repo. Language auto-detected.</p>
+          </div>
+          <div class="mini-step fade-in" style="transition-delay:0.1s">
+            <div class="mini-step-num">02</div>
+            <h3>Run the Autopsy</h3>
+            <p>Choose your mode — Code Autopsy or Code Explainer — and hit Run. Gemini AI does the rest.</p>
+          </div>
+          <div class="mini-step fade-in" style="transition-delay:0.2s">
+            <div class="mini-step-num">03</div>
+            <h3>Get Diagnosed</h3>
+            <p>Receive a full diagnosis — score, bugs, security issues, complexity, fixes, and improved code.</p>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:2.5rem;">
+          <a href="/how-it-works.html" class="btn btn-secondary">See Full Process →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Stats ──────────────────────────────────────────────────────── -->
+    <section class="stats fade-in">
+      <div class="container stats-grid">
+        <div class="stat-item">
+          <h3 class="counter" data-target="10000" data-target-text="10,000+">0</h3>
+          <p>Bugs Found</p>
+        </div>
+        <div class="stat-item">
+          <h3 class="counter" data-target="500" data-target-text="500+">0</h3>
+          <p>Developers</p>
+        </div>
+        <div class="stat-item">
+          <h3 class="counter" data-target="9.2" data-target-text="9.2">0.0</h3>
+          <p>Avg Score</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ────────────────────────────────────────────────────────── -->
+    <section class="cta-section container fade-in">
+      <p class="section-label">Ready?</p>
+      <h2>Your code has bugs.<br>Time to find them.</h2>
+      <p>Paste your code, pick your mode, and get a brutally honest diagnosis in seconds. Free. No credit card.</p>
+      <div class="cta-btns">
+        <a href="/tool.html" class="btn btn-primary">Run Autopsy Now</a>
+        <a href="/auth.html" id="cta-secondary-btn" class="btn btn-secondary">Create Account</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer fade-in">
+    <div class="tagline">CodeAutopsy &mdash; Diagnose before you deploy.</div>
+    <div>&copy; 2026 CodeAutopsy. All rights reserved.</div>
+    <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.379.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/>
+      </svg>
+    </a>
+  </footer>
+
+  <script type="module" src="/app.js"></script>
+  <script>
+    // ── Pass mode to tool.html via URL param ──────────────────────────
+    document.querySelectorAll('.mega-item[href]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        // mode is already in the href as ?mode=xxx
+      });
+    });
+  </script>
+</body>
+</html>
