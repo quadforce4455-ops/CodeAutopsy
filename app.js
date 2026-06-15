@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, setPersistence, inMemoryPersistence, signInAnonymously, sendEmailVerification } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, setPersistence, inMemoryPersistence, signInAnonymously, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "firebase/firestore";
 
@@ -116,6 +116,9 @@ function friendlyAuthError(error) {
     case 'auth/too-many-requests':   return 'Too many failed attempts. Please wait a few minutes and try again.';
     case 'auth/user-disabled':       return 'This account has been disabled. Please contact support.';
     case 'auth/network-request-failed': return 'Network error. Check your connection and try again.';
+    case 'auth/missing-email':       return 'Please enter your email address.';
+    case 'auth/expired-action-code': return 'This reset link has expired. Please request a new one.';
+    case 'auth/invalid-action-code': return 'This reset link is invalid or has already been used.';
     default:                         return 'Something went wrong. Please try again.';
   }
 }
@@ -445,6 +448,63 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/tool.html';
       } catch (error) {
         errEl.innerText = friendlyAuthError(error); errEl.style.display = 'block';
+        submitBtn.innerText = orig; submitBtn.disabled = false;
+      }
+    });
+  }
+
+  // ── Forgot Password ──────────────────────────────────────────────────
+  const forgotLink = document.getElementById('forgot-password-link');
+  const resetModal = document.getElementById('reset-modal');
+  const resetForm = document.getElementById('reset-form');
+  const resetCancel = document.getElementById('reset-cancel');
+  const resetEmailInput = document.getElementById('reset-email');
+  const resetMessage = document.getElementById('reset-message');
+
+  if (forgotLink && resetModal) {
+    forgotLink.addEventListener('click', () => {
+      const loginEmail = document.getElementById('login-email')?.value.trim();
+      if (loginEmail) resetEmailInput.value = loginEmail;
+      resetMessage.style.display = 'none';
+      resetModal.style.display = 'flex';
+    });
+
+    resetCancel.addEventListener('click', () => {
+      resetModal.style.display = 'none';
+      resetForm.reset();
+      resetMessage.style.display = 'none';
+    });
+
+    resetModal.addEventListener('click', (e) => {
+      if (e.target === resetModal) {
+        resetModal.style.display = 'none';
+        resetForm.reset();
+        resetMessage.style.display = 'none';
+      }
+    });
+
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = resetEmailInput.value.trim();
+      const submitBtn = document.getElementById('reset-submit');
+      const orig = submitBtn.innerText;
+      submitBtn.innerText = 'Sending...'; submitBtn.disabled = true;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        resetMessage.style.color = '#4ade80';
+        resetMessage.innerText = `Reset link sent! Check ${email} for instructions.`;
+        resetMessage.style.display = 'block';
+        submitBtn.innerText = 'Sent ✓';
+        setTimeout(() => {
+          resetModal.style.display = 'none';
+          resetForm.reset();
+          resetMessage.style.display = 'none';
+          submitBtn.innerText = orig; submitBtn.disabled = false;
+        }, 2500);
+      } catch (error) {
+        resetMessage.style.color = 'var(--accent-red)';
+        resetMessage.innerText = friendlyAuthError(error);
+        resetMessage.style.display = 'block';
         submitBtn.innerText = orig; submitBtn.disabled = false;
       }
     });
