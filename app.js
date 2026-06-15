@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, setPersistence, inMemoryPersistence, signInAnonymously, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "firebase/firestore";
+import { inject } from '@vercel/analytics';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCvQPs63jwvQkkw_UZlavJjWd3b_xKTuCA",
@@ -17,6 +18,9 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// Initialize Vercel Web Analytics
+inject();
 
 if (window.self !== window.top) {
   setPersistence(auth, inMemoryPersistence).catch(console.error);
