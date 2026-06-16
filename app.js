@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, setPersistence, inMemoryPersistence, signInAnonymously, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "firebase/firestore";
-import { inject } from '@vercel/analytics';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCvQPs63jwvQkkw_UZlavJjWd3b_xKTuCA",
@@ -19,12 +18,27 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Initialize Vercel Web Analytics
-inject();
-
 if (window.self !== window.top) {
   setPersistence(auth, inMemoryPersistence).catch(console.error);
 }
+
+// ── Auth readiness gate ───────────────────────────────────────────────────
+// auth.currentUser is null for a brief instant on every page load while
+// Firebase restores a persisted session. Any code that checks
+// auth.currentUser synchronously during that window will incorrectly think
+// "no user" and may trigger an anonymous sign-in even for an already
+// logged-in user. authReady resolves once the *first* onAuthStateChanged
+// callback has fired, guaranteeing auth.currentUser reflects the real,
+// restored session (or is genuinely null if no session exists).
+let resolveAuthReady;
+const authReady = new Promise(resolve => { resolveAuthReady = resolve; });
+let authReadyResolved = false;
+onAuthStateChanged(auth, () => {
+  if (!authReadyResolved) {
+    authReadyResolved = true;
+    resolveAuthReady();
+  }
+});
 
 // ── Admin config ─────────────────────────────────────────────────────────
 const ADMIN_EMAILS = ['quadforce4455@gmail.com']; // 🔧 Replace with your admin email
@@ -45,9 +59,16 @@ function getUsagePeriodKey() {
 
 async function checkAndIncrementUsage() {
   try {
+    // Wait for Firebase to finish restoring any persisted session before
+    // checking auth.currentUser — otherwise a logged-in user can be
+    // mistaken for a guest during the brief restore window and get signed
+    // in anonymously instead, creating a throwaway account.
+    await authReady;
+
     if (isAdmin()) return { allowed: true };
 
-    // Ensure we have a Firebase uid — sign in anonymously if needed
+    // Ensure we have a Firebase uid — sign in anonymously only if there is
+    // truly no session (real or anonymous) after auth has finished resolving.
     if (!auth.currentUser) {
       await signInAnonymously(auth);
     }
@@ -82,6 +103,8 @@ async function checkAndIncrementUsage() {
 // ── Read-only usage check (for popup display, no increment) ──────────────
 async function getCurrentUsage() {
   try {
+    await authReady;
+
     if (isAdmin()) return { admin: true };
 
     if (!auth.currentUser) {
@@ -206,8 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Update on Firebase auth change
   let authResolved = false;
-  let resolveAuthReady;
-  const authReady = new Promise(resolve => { resolveAuthReady = resolve; });
   onAuthStateChanged(auth, () => {
     updateAuthNav();
     renderUsageBadge();
@@ -215,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!authResolved) {
       authResolved = true;
       if (authNavItem) authNavItem.style.visibility = 'visible';
-      resolveAuthReady();
     }
   });
   
@@ -359,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // GitHub login from auth page (works for both login and signup forms)
   const setupGithubAuthButton = () => {
-    const githubBtns = document.querySelectorAll('#github-login-btn-auth');
+    const githubBtns = document.querySelectorAll('.github-login-btn-auth');
     githubBtns.forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -1501,14 +1521,17 @@ document.addEventListener('DOMContentLoaded', () => {
       bugCount: (data.bugs || []).length
     };
     const user = auth.currentUser;
+    console.log('[saveToHistory] user:', user ? { uid: user.uid, isAnonymous: user.isAnonymous, email: user.email } : null);
     if (user) {
       const ref = doc(db, 'history', user.uid);
       const snap = await getDoc(ref);
       const existing = snap.exists() ? (snap.data().entries || []) : [];
       const updated = [entry, ...existing].slice(0, 50);
       await setDoc(ref, { entries: updated });
+      console.log('[saveToHistory] wrote to history/' + user.uid + ', total entries now:', updated.length);
     } else {
       // fallback to localStorage if not logged in
+      console.log('[saveToHistory] no user — falling back to localStorage');
       const history = JSON.parse(localStorage.getItem('autopsy_history') || '[]');
       history.unshift(entry);
       localStorage.setItem('autopsy_history', JSON.stringify(history.slice(0, 50)));
@@ -2029,12 +2052,17 @@ document.addEventListener('DOMContentLoaded', function initHistoryDashboard() {
 async function getHistory() {
   try {
     const user = auth.currentUser;
+    console.log('[getHistory] user:', user ? { uid: user.uid, isAnonymous: user.isAnonymous, email: user.email } : null);
     if (user) {
       const snap = await getDoc(doc(db, 'history', user.uid));
+      console.log('[getHistory] doc exists:', snap.exists(), 'entries:', snap.exists() ? (snap.data().entries || []).length : 0);
       return snap.exists() ? (snap.data().entries || []) : [];
     }
     return JSON.parse(localStorage.getItem('autopsy_history') || '[]');
-  } catch { return []; }
+  } catch (e) {
+    console.error('[getHistory] error (was previously silently swallowed):', e);
+    return [];
+  }
 }
 
   // ── Populate Language Filter ─────────────────────────────────────────
